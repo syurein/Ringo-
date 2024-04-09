@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bingo Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    body {
+      background-color: #24fc03;
+    }
+
+    .bingo-board {
+      position: relative;
+      width: 100vw;
+      height: 50vh;
+      overflow: hidden;
+    }
+
+    .falling-image {
+      width: 200px;
+      height: 200px;
+      position: absolute;
+      top: -300px; /* Adjusted to move higher in pixels */
+      left: 50%; /* Adjusted to center horizontally */
+      transform: translate(-50%, -50%); /* Centering trick */
+    }
+
+    @keyframes fallAnimation {
+      0% {
+        top: -50px;
+      }
+      100% {
+        top: 100%;
+      }
+    }
+
+    .bingo-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 800%;
+      color: #000;
+    }
+
+    .past-numbers {
+      font-size: 30px;
+    }
+
+    .is-value {
+      font-size: 50px;
+      margin-top: 20px;
+      color: #fff;
+    }
+
+    /* 追加 */
+    .white-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #fff;
+      display: none;
+      z-index: 999;
+    }
+
+    .chosen-number-display {
+      font-size: 500px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    h1 {
+      font-size: 400%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Ringo Game🍎</h1> <!-- タイトルを追加 -->
+    <!-- Adjusted image position -->
+    <div class="white-screen"></div> <!-- 追加 -->
+    <img src="https://illust8.com/wp-content/uploads/2018/06/fruit_apple_illust_150.png" class="falling-image"
+      alt="Apple">
+    <div class="bingo-number"></div>
+    <div class="bingo-board" onclick="dropNumber()"></div>
+    <div class="past-numbers"></div>
+    <div class="is-value"></div> <!-- 追加 -->
+    <!-- 追加された部分 -->
+    
+  </div>
+
+  <script>
+    let pastNumbers = []; // 新しい変数を追加
+    let is = 0;
+    const pastNumbersDisplay = document.querySelector('.past-numbers'); // 追加された行
+    const isValueDisplay = document.querySelector('.is-value'); // 追加された行
+    const whiteScreen = document.querySelector('.white-screen'); // 追加された行
+function playAudio() {
+var audio = new Audio('Bingo_Machine-Digital02-9(Result-Dry).mp3');
+  audio.play();
+  
+}
+ 
+async function playGoogleDriveAudio() {
+    const audioUrl = 'https://docs.google.com/uc?id=1ri8HXBhRSfArMgyZmMXaATMTLNygjlES';
+   // https://drive.google.com/file/d/1ri8HXBhRSfArMgyZmMXaATMTLNygjlES/view?usp=sharing
+    try {
+        const response = await fetch(audioUrl);
+        const blob = await response.blob();
+        const audio = new Audio(URL.createObjectURL(blob));
+        audio.play();
+    } catch (error) {
+        console.error('Failed to load audio:', error);
+    }
+}
+function pp(){
+var audio = new Audio('Bingo_Machine-Digital02-2(Start-Speaker).mp3');
+  audio.play();
+}
+    function dropNumber() {
+      playAudio()
+      const number = Math.floor(Math.random() * 74) + 1; // Generate a random number between 1 and 75
+
+      // すでに出た数字なら再度数字を生成する
+      while (pastNumbers.includes(number)) {
+        number = Math.floor(Math.random() * 74) + 1;
+      }
+
+      pastNumbers.push(number); // 出た数字を保存する
+
+      const numberElement = document.querySelector('.bingo-number');
+      numberElement.textContent = number;
+
+      // 追加：過去の数字を表示する部分の更新
+      pastNumbersDisplay.textContent = `今出た数字: ${pastNumbers.join(', ')}`;
+
+      const image = document.querySelector('.falling-image');
+      const board = document.querySelector('.bingo-board');
+      const clone = image.cloneNode(true);
+      clone.classList.add('falling-number');
+      board.appendChild(clone);
+
+      // Randomize position
+      const randomX = Math.random() * (board.offsetWidth - 100);
+      clone.style.left = `${randomX}px`;
+
+      // Animation
+      clone.style.animation = 'fallAnimation 2s ease forwards';
+      clone.addEventListener('animationend', () => {
+        board.removeChild(clone);
+      });
+
+      const numberClone = numberElement.cloneNode(true);
+      board.appendChild(numberClone);
+      numberClone.style.top = `${clone.offsetTop + clone.offsetHeight}px`;
+      numberClone.style.left = `${clone.offsetLeft + clone.offsetWidth / 2 - numberClone.offsetWidth / 2 - 30}px`;
+      numberClone.style.animation = 'fallAnimation 2s ease forwards';
+      numberClone.addEventListener('animationend', () => {
+        board.removeChild(numberClone);
+        is++;
+        isValueDisplay.textContent = `現在の回数: ${is}`; // 回数を表示
+
+        // 選ばれた数字を大きく表示
+        const chosenNumberDisplay = document.createElement('div');
+        chosenNumberDisplay.classList.add('chosen-number-display');
+        chosenNumberDisplay.textContent = number;
+        whiteScreen.appendChild(chosenNumberDisplay);
+	
+        // 画面を真っ白にする
+        whiteScreen.style.display = 'block';
+	//playGoogleDriveAudio()
+	pp();
+        setTimeout(() => {
+          whiteScreen.removeChild(chosenNumberDisplay);
+          whiteScreen.style.display = 'none';
+
+          //alert(`選ばれた数字は ${number} です！`);
+        }, 2000); // 2秒後にalertを表示
+      });
+    }
+  </script>
+</body>
+
+</html>
