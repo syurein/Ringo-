@@ -14,7 +14,15 @@
       margin: 0;
       background-color: #f0f0f0;
     }
-
+	body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+  transform: scale(0.75); /* Added to scale down to 75% */
+}
     .container {
       text-align: center;
     }
@@ -110,7 +118,8 @@
 
   <script>
     let pastNumbers = []; // 新しい変数を追加
-    let is = 0;
+    let is = 0;//試行回数
+　　let lim=75;//ここに上限値を設定
     const pastNumbersDisplay = document.querySelector('.past-numbers'); // 追加された行
     const isValueDisplay = document.querySelector('.is-value'); // 追加された行
     const whiteScreen = document.querySelector('.white-screen'); // 追加された行
@@ -120,29 +129,18 @@ var audio = new Audio('Bingo_Machine-Digital02-9(Result-Dry).mp3');
   
 }
  
-async function playGoogleDriveAudio() {
-    const audioUrl = 'https://docs.google.com/uc?id=1ri8HXBhRSfArMgyZmMXaATMTLNygjlES';
-   // https://drive.google.com/file/d/1ri8HXBhRSfArMgyZmMXaATMTLNygjlES/view?usp=sharing
-    try {
-        const response = await fetch(audioUrl);
-        const blob = await response.blob();
-        const audio = new Audio(URL.createObjectURL(blob));
-        audio.play();
-    } catch (error) {
-        console.error('Failed to load audio:', error);
-    }
-}
+
 function pp(){
 var audio = new Audio('Bingo_Machine-Digital02-2(Start-Speaker).mp3');
   audio.play();
 }
     function dropNumber() {
       playAudio()
-      const number = Math.floor(Math.random() * 74) + 1; // Generate a random number between 1 and 75
+      const number = Math.floor(Math.random() * lim) + 1; // Generate a random number between 1 and 75
 
       // すでに出た数字なら再度数字を生成する
       while (pastNumbers.includes(number)) {
-        number = Math.floor(Math.random() * 74) + 1;
+        number = Math.floor(Math.random() * lim) + 1;
       }
 
       pastNumbers.push(number); // 出た数字を保存する
